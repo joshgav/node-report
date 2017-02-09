@@ -1,13 +1,19 @@
 # node-report
 
-Delivers a human-readable diagnostic summary, written to file.
+Writes a human-readable diagnostic summary to a file upon one of a
+user-configurable set of triggers.
 
 The report is intended for development, test and production
 use, to capture and preserve information for problem determination.
 It includes JavaScript and native stack traces, heap statistics,
-platform information and resource usage etc. With the report enabled,
-reports can be triggered on unhandled exceptions, fatal errors, signals
-and calls to a JavaScript API.
+platform information, resource usage and more.
+
+Configurable triggers include the following:
+
+* unhandled exceptions
+* fatal errors
+* signals
+* calls to a JavaScript API
 
 Supports Node.js v4, v6 and v7 on Linux, MacOS, Windows and AIX.
 
@@ -17,6 +23,7 @@ Supports Node.js v4, v6 and v7 on Linux, MacOS, Windows and AIX.
 npm install node-report
 node -r node-report app.js
 ```
+
 A report will be triggered automatically on unhandled exceptions and fatal
 error events (for example out of memory errors), and can also be triggered
 by sending a USR2 signal to a Node.js process (AIX/Linux/MacOS only).
@@ -25,28 +32,33 @@ A report can also be triggered via an API call from a JavaScript
 application.
 
 ```js
-var nodereport = require('node-report');
+const nodereport = require('node-report');
 nodereport.triggerReport();
 ```
+
 The API can be used without adding the automatic exception and fatal error
 hooks and the signal handler, as follows:
 
 ```js
-var nodereport = require('node-report/api');
+const nodereport = require('node-report');
 nodereport.triggerReport();
 ```
 
-Content of the report consists of a header section containing the event
-type, date, time, PID and Node version, sections containing JavaScript and
-native stack traces, a section containing V8 heap information, a section
-containing libuv handle information and an OS platform information section
-showing CPU and memory usage and system limits. An example report can be
-triggered using the Node.js REPL:
+Report content includes the following:
+
+* event type, timestamp, PID and command line
+* version numbers for Node, embedded shared libraries, and OS
+* a JavaScript stack trace
+* a native stack trace
+* heap information
+* a list of libuv handles
+* system information, including current CPU and memory usage and limits
+
+A report can be triggered using the Node.js REPL:
 
 ```
 $ node
-> nodereport = require('node-report')
-> nodereport.triggerReport()
+> require('node-report').triggerReport()
 Writing Node.js report to file: node-report.20161020.091102.8480.001.txt
 Node.js report completed
 >
@@ -66,7 +78,7 @@ nodereport.triggerReport("myReportName");
 Additional configuration is available using the following APIs:
 
 ```js
-var nodereport = require('node-report/api');
+const nodereport = require('node-report');
 nodereport.setEvents("exception+fatalerror+signal+apicall");
 nodereport.setSignal("SIGUSR2|SIGQUIT");
 nodereport.setFileName("stdout|stderr|<filename>");
